@@ -7,6 +7,6 @@ package cp.week8;
 public class Exercise3
 {
 	/*
-	- Read and replicate the examples in: https://docs.oracle.com/javase/tutorial/essential/concurrency/immutable.html
+	- Read and replicate the examples in: Https://docs.oracle.com/javase/tutorial/essential/concurrency/immutable.html
 	*/
 }
