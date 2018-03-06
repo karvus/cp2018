@@ -1,5 +1,9 @@
 package cp.week8;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  *
  * @author Fabrizio Montesi <fmontesi@imada.sdu.dk>
@@ -15,4 +19,31 @@ public class Exercise5
 	- Question: Is the code you obtained robust with respect to client-side locking (see book)?
 				Would it help if the counters were private?
 	*/
+
+    // thread-safe counter class
+    public static class Counter {
+        private int count = 0;
+
+        public synchronized void inc () {
+            count++;
+        }
+        public synchronized void dec () {
+            count--;
+        }
+
+        public synchronized int get () {
+            return count;
+        }
+    }
+
+    public static class Point {
+        public Counter x = new Counter();
+        public Counter y = new Counter();
+
+        public synchronized boolean areEqual() {
+            return (x.get() == y.get());
+        }
+    }
+    // it is not robust, because x and y can be changed "outside", so that the point can be in an inconsistent state.
+    // changing them to private helps.
 }
