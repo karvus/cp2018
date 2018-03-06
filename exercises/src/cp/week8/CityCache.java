@@ -6,7 +6,7 @@ import java.util.List;
  *
  * @author Fabrizio Montesi <fmontesi@imada.sdu.dk>
  */
-public static class CityCache
+public class CityCache
 {
     /*
  	- Create a static class for caching the names of some cities in a static field.
