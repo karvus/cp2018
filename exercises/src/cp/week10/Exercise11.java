@@ -17,31 +17,27 @@ public class Exercise11 {
 	  that all .txt files in sub-directories must also be found.
 	*/
 
-    public static class TXTFileCollector extends SimpleFileVisitor<Path> {
-
-        List<Path> files;
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
-            if (file.toString().endsWith(".txt")) {
-                files.add(file);
-            }
-            return CONTINUE;
+    public static List<Path> collect (Path dir) {
+        List<Path> files = new ArrayList<>();
+        try {
+            Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
+                    if (file.toString().endsWith(".txt")) {
+                        files.add(file);
+                    }
+                    return CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        public List<Path> collect(Path dir) {
-            files = new ArrayList<>();
-            try {
-                Files.walkFileTree(dir, this);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return files;
-        }
+        return files;
     }
 
     public static void main(String[] args) {
         Path startingDir =  Paths.get("/home/thomas/git/cp2018/exercises/src/cp/week10/txt-files/");
-        new TXTFileCollector().collect(startingDir).stream().forEach(System.out::println);
+        collect(startingDir).stream().forEach(System.out::println);
     }
 }
 
