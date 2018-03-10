@@ -14,23 +14,6 @@ public class Exercise13
 	  manually-controlled threads.
 	*/
 
-	/** Recursively traverse the filesystem from a point, and return all found subdirectories
-     *
-     * @param start collect subdirectories from this path
-     * @return subdirectories of start
-     */
-    private static List<Path> getDirs(Path start) {
-        List<Path> dirs = null;
-        try {
-            dirs = Files.walk(start)
-                    .filter(p -> Files.isDirectory(p))
-                    .collect(toList());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return dirs;
-    }
-
     /** Collect all .txt-files of a directory into a queue.
      *
      * @param dir directory in which we look for .txt-files
@@ -55,10 +38,14 @@ public class Exercise13
         int cores = Runtime.getRuntime().availableProcessors();
         ExecutorService producersExecutor = Executors.newFixedThreadPool(cores);
 
-        List<Path> dirs = getDirs(Paths.get(args[0]));
         Deque<Path> files = new ConcurrentLinkedDeque<>();
-        dirs.forEach(p -> producersExecutor.submit(() -> collectTXTFiles(p, files)));
-
+        try {
+            Files.walk(Paths.get(args[0]))
+                    .filter(Files::isDirectory)
+                    .forEach(p -> producersExecutor.submit(() -> collectTXTFiles(p, files)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         producersExecutor.shutdown();
         // wait for collectors to complete
         try {
