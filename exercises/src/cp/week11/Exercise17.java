@@ -1,19 +1,14 @@
 package cp.week11;
 
-import jdk.nashorn.internal.ir.Block;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  *
@@ -46,16 +41,19 @@ public class Exercise17
         }
     }
 
+    /**
+     * consume all paths (.txt-files), respond to cancellation/interruption
+     * @param paths a collection of paths to consume
+     */
     private static void consumePaths (BlockingDeque<Path> paths) {
         Path path = null;
-        boolean cancelled = false;
+        boolean cancelled = false; // are we cancelled/interrupted?
+
         while (!cancelled) {
-        // while (!Thread.currentThread().isInterrupted()) {
             try {
                 path = paths.take();
             } catch (InterruptedException e) {
                 // interrupted means that we were cancelled, so empty paths and return
-                System.out.println("interrupted");
                 cancelled = true;
             }
             if (path != null) {
@@ -68,6 +66,13 @@ public class Exercise17
             System.out.println(path);
     }
 
+    /**
+     * Submit n tasks to executor, and return the list of futures
+     * @param executor the executor to submit tasks to
+     * @param task the task to submit
+     * @param n the number of tasks to submit
+     * @return List of futures, representing each tasks submitted
+     */
     private static List<Future<?>> submitTasks (ExecutorService executor, Runnable task, int n) {
         List<Future<?>> consumers = new LinkedList<>();
         IntStream.range(0, n).forEach(i -> consumers.add(executor.submit(task)));
@@ -109,8 +114,5 @@ public class Exercise17
 
         consumers.forEach(f -> f.cancel(true));
         shutdownAndAwait(consumerExecutor);
-
-        System.out.println(count);
-
     }
 }
