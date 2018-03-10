@@ -1,15 +1,11 @@
 package cp.week11;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  *
@@ -27,13 +23,13 @@ public class Exercise16
     /** Collect all .txt-files of a directory into a queue.
      *
      * @param dir directory in which we look for .txt-files
-     * @param files the thread-safe queue where found .txt files are put*
+     * @param paths the thread-safe queue where found .txt files are put
      */
-    private static void collectTXTFiles (Path dir, Deque files) {
+    private static void collectTXTFiles (Path dir, Deque paths) {
         try {
             Files.list(dir)
                     .filter(p -> p.toString().endsWith(".txt"))
-                    .forEach(files::add);
+                    .forEach(paths::add);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,8 +41,7 @@ public class Exercise16
             System.exit(1);
         }
 
-        int cores = Runtime.getRuntime().availableProcessors();
-        ExecutorService producersExecutor = Executors.newFixedThreadPool(cores);
+        ExecutorService producersExecutor = Executors.newWorkStealingPool();
 
         Deque<Path> files = new ConcurrentLinkedDeque<>();
         try {
@@ -63,8 +58,6 @@ public class Exercise16
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // just print the files for now
-        files.stream().forEach(System.out::println);
     }
 }
 // /home/thomas/git/cp2018/exercises/src/cp/week10/data_example
