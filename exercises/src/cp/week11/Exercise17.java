@@ -36,8 +36,6 @@ public class Exercise17
      * @param paths the thread-safe queue where found .txt files are put
      */
 
-    private static AtomicInteger count = new AtomicInteger(0);
-
     private static void collectTXTPaths (Path dir, BlockingDeque paths) {
         try {
             Files.list(dir)
@@ -52,6 +50,7 @@ public class Exercise17
         Path path = null;
         boolean cancelled = false;
         while (!cancelled) {
+        // while (!Thread.currentThread().isInterrupted()) {
             try {
                 path = paths.take();
             } catch (InterruptedException e) {
@@ -61,49 +60,26 @@ public class Exercise17
             }
             if (path != null) {
                 System.out.println(path);
-                count.incrementAndGet();
             }
             path = null;
         }
+        // make sure the Deque is empty before exiting
         while ((path = paths.poll()) != null)
             System.out.println(path);
     }
 
-    private static List<Future<?>> submitConsumersWithExecutor (ExecutorService executor, BlockingDeque paths) {
+    private static List<Future<?>> submitTasks (ExecutorService executor, Runnable task, int n) {
         List<Future<?>> consumers = new LinkedList<>();
-        IntStream.range(0, 4).forEach(i -> consumers.add(executor.submit(() -> consumePaths(paths))));
+        IntStream.range(0, n).forEach(i -> consumers.add(executor.submit(task)));
         return consumers;
     }
 
-    private static void cancelFuturesAndShutdown(List<Future<?>> futures, ExecutorService executor) {
-        futures.stream().forEach(f -> f.cancel(true));
+    private static void shutdownAndAwait(ExecutorService executor) {
         executor.shutdown();
-
         try {
             executor.awaitTermination(1, TimeUnit.DAYS);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static List<Thread> startConsumerThreads (BlockingDeque paths) {
-        List<Thread> consumers = new LinkedList<>();
-
-        for (int i = 0; i < 4; i++) {
-            consumers.add(new Thread(() -> consumePaths(paths)));
-            consumers.get(i).start();
-        }
-        return consumers;
-    }
-
-    private static void stopThreads(List<Thread> threads) {
-        threads.forEach(Thread::interrupt);
-        for (Thread t : threads) {
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -114,6 +90,11 @@ public class Exercise17
         }
 
         BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
+
+        // start consumers, so they can begin work as soon as it is available
+        ExecutorService consumerExecutor = Executors.newCachedThreadPool(); // stealing doesn't work for some reason
+        List<Future<?>> consumers = submitTasks(consumerExecutor, () -> consumePaths(paths), 4);
+
         ExecutorService producersExecutor = Executors.newWorkStealingPool();
 
         try {
@@ -124,20 +105,10 @@ public class Exercise17
             e.printStackTrace();
         }
 
-        ExecutorService consumerExecutor = Executors.newCachedThreadPool();
-        List<Future<?>> futures = submitConsumersWithExecutor(consumerExecutor, paths);
+        shutdownAndAwait(producersExecutor);
 
-        // shutdown producers and wait for termination
-        producersExecutor.shutdown();
-        // wait for producers to complete
-        try {
-            producersExecutor.awaitTermination(1, TimeUnit.DAYS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // stopThreads(threads);
-        cancelFuturesAndShutdown(futures, consumerExecutor);
+        consumers.forEach(f -> f.cancel(true));
+        shutdownAndAwait(consumerExecutor);
 
         System.out.println(count);
 
