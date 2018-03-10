@@ -129,14 +129,18 @@ public class Exercise19
             System.exit(1);
         }
 
+        int nConsumers = 4;
+
         BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
 
         // start consumers, so they can begin work as soon as it is available
         ExecutorService consumerExecutor = Executors.newCachedThreadPool(); // stealing doesn't work for some reason
-        List<Future<?>> consumers = submitTasks(consumerExecutor, () -> consumePaths(paths, consumerExecutor), 4);
+        List<Future<?>> consumers = submitTasks(consumerExecutor, () ->
+                consumePaths(paths, consumerExecutor), nConsumers);
 
         ExecutorService producersExecutor = Executors.newWorkStealingPool();
 
+        // walk from start path, spawning new consumers for every directory
         try {
             Files.walk(Paths.get(args[0]))
                     .filter(Files::isDirectory)
