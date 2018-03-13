@@ -40,6 +40,7 @@ public class Exercise19
         }
     }
 
+    // token that no more elements will be queued
     private static Path poisonPill = Paths.get("poisonPill");
 
     private static String getHead(Path path, int n) {
@@ -69,11 +70,12 @@ public class Exercise19
         boolean poisoned = false;
 
         while (!terminated && !poisoned) {
-            Path path = null;
+            Path path;
             try {
                 path = paths.take();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                return;
             }
             if (path == poisonPill) {
                 poisoned = true;
@@ -101,19 +103,6 @@ public class Exercise19
         }
     }
 
-    /**
-     * Submit n tasks to executor, and return the list of futures
-     * @param executor the executor to submit tasks to
-     * @param task the task to submit
-     * @param n the number of tasks to submit
-     * @return List of futures, representing each tasks submitted
-     */
-    private static List<Future<?>> submitTasks (ExecutorService executor, Runnable task, int n) {
-        List<Future<?>> consumers = new LinkedList<>();
-        IntStream.range(0, n).forEach(i -> consumers.add(executor.submit(task)));
-        return consumers;
-    }
-
     private static void shutdownAndAwait(ExecutorService executor) {
         executor.shutdown();
         try {
@@ -130,17 +119,15 @@ public class Exercise19
         }
 
         int nConsumers = 4;
-
         BlockingDeque<Path> paths = new LinkedBlockingDeque<>();
 
-        // start consumers, so they can begin work as soon as it is available
-        ExecutorService consumerExecutor = Executors.newCachedThreadPool(); // stealing doesn't work for some reason
-        List<Future<?>> consumers = submitTasks(consumerExecutor, () ->
-                consumePaths(paths, consumerExecutor), nConsumers);
+        // start consumers, first so they can begin work as soon as it becomes available
+        ExecutorService consumerExecutor = Executors.newWorkStealingPool();
+        IntStream.range(0, nConsumers).forEach(i -> consumerExecutor.submit(() ->
+                consumePaths(paths, consumerExecutor)));
 
         ExecutorService producersExecutor = Executors.newWorkStealingPool();
-
-        // walk from start path, spawning new consumers for every directory
+        // walk from start path, spawning new producers for every directory
         try {
             Files.walk(Paths.get(args[0]))
                     .filter(Files::isDirectory)
@@ -150,10 +137,8 @@ public class Exercise19
         }
 
         shutdownAndAwait(producersExecutor);
-
+        // at this point, no more paths will be added to the queue
         paths.addLast(poisonPill);
-
-        // consumers.forEach(f -> f.cancel(true));
         shutdownAndAwait(consumerExecutor);
     }
 }
