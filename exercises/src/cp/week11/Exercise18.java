@@ -19,50 +19,48 @@ public class Exercise18
 		* When a consumer terminates, it prints on screen the sum of the lengths
 		  of all files it read.
 	*/
+
+    // sentinel, meaning that nothing more will be added to a queue
+    private static final Path POISON_PILL = Paths.get("POISON_PILL");
+
 	 private static void collectTXTPaths (Path dir, BlockingDeque paths) {
         try {
             Files.list(dir)
-                    .filter(p -> p.toString().endsWith(".txt"))
+                    .filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".txt"))
                     .forEach(paths::add);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * consume all paths (.txt-files), respond to cancellation/interruption
-     * @param paths a collection of paths to consume
-     */
-    private static void consumePaths (BlockingDeque<Path> paths) {
-        Path path = null;
-        boolean cancelled = false; // are we cancelled/interrupted?
+    private static void consume(BlockingDeque<Path> paths) {
+        Path txtFile;
         int length = 0;
 
-        while (!cancelled) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
-                path = paths.take();
+                txtFile = paths.take();
             } catch (InterruptedException e) {
-                // interrupted means that we were cancelled, so empty paths and return
-                cancelled = true;
+                // just shut down if we're cancelled
+                break;
             }
-            if (path != null) {
-                try {
-                    length += Files.size(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+            // if we're poisoned, put the pill back on the queue and exit
+            if (txtFile == POISON_PILL) {
+                paths.add(POISON_PILL);
+                break;
             }
-            path = null;
-        }
-        // make sure the Deque is empty before exiting
-        while ((path = paths.poll()) != null) {
+
+            // otherwise, add the size of the file to our running sum
             try {
-                length += Files.size(path);
+                length += Files.size(txtFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // make sure the Deque is empty before exiting
+            System.out.println("Counted " + length + "bytes.");
         }
-        System.out.println(length);
     }
 
     /**
@@ -97,7 +95,7 @@ public class Exercise18
 
         // start consumers, so they can begin work as soon as it is available
         ExecutorService consumerExecutor = Executors.newCachedThreadPool(); // stealing doesn't work for some reason
-        List<Future<?>> consumers = submitTasks(consumerExecutor, () -> consumePaths(paths), 4);
+        List<Future<?>> consumers = submitTasks(consumerExecutor, () -> consume(paths), 4);
 
         ExecutorService producersExecutor = Executors.newWorkStealingPool();
 
