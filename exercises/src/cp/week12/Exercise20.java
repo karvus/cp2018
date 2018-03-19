@@ -23,29 +23,6 @@ public class Exercise20
 	- The main thread should wait for all futures to complete and print on screen the sum of all results.
 	*/
 
-	private static int count(String haystack, char needle) {
-	    int count = 0;
-        for (char c : haystack.toCharArray()) {
-            if (c == needle)
-                count++;
-        }
-        return count;
-    }
-
-    private static int count(Path haystack, char needle) {
-        List<String> lines;
-        try {
-            lines = Files.readAllLines(haystack);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        return lines.stream()
-            .parallel()
-            .mapToInt(l -> count(l, needle))
-            .sum();
-    }
-
     public static void main(String[] args) {
         Path dir = Paths.get("/home/thomas/git/cp2018/exercises/src/cp/week12/as/");
 
@@ -53,7 +30,7 @@ public class Exercise20
         List<Future> futures;
         try {
             futures = Files.list(dir)
-                .map(p -> executor.submit(() -> count(p, 'a')))
+                .map(p -> executor.submit(() -> util.count(p, 'a')))
                 .collect(toList());
         } catch (IOException e) {
             e.printStackTrace();
@@ -70,6 +47,5 @@ public class Exercise20
             }
         }
         System.out.println(sum);
-
     }
 }
