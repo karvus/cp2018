@@ -34,7 +34,7 @@ public class Exercise22
         ai.addAndGet(util.count(file, c));
     }
 
-    private static int newPathCounter(Path file, Shared shared) {
+    private static int countOrMaybeAddFuture(Path file, Shared shared) {
         if (file.toString().endsWith(".dat")) {
             shared.futureBs.add(shared.executor.submit(() -> util.count(file, 'b')));
             return 0;
@@ -49,7 +49,7 @@ public class Exercise22
         try {
             count = Files.list(dir)
                 .filter(p -> Files.isRegularFile(p))
-                .mapToInt(p -> newPathCounter(p, shared))
+                .mapToInt(p -> countOrMaybeAddFuture(p, shared))
                 .sum();
 
         } catch (IOException e) {
