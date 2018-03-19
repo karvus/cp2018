@@ -1,6 +1,15 @@
 package cp.week12;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.concurrent.*;
+
+import static java.util.stream.Collectors.toList;
+
 /**
  *
  * @author Fabrizio Montesi <fmontesi@imada.sdu.dk>
@@ -13,4 +22,54 @@ public class Exercise20
 	- The task should compute how many times the letter "a" is present in the file, and return it as an integer.
 	- The main thread should wait for all futures to complete and print on screen the sum of all results.
 	*/
+
+	private static int count(String haystack, char needle) {
+	    int count = 0;
+        for (char c : haystack.toCharArray()) {
+            if (c == needle)
+                count++;
+        }
+        return count;
+    }
+
+    private static int count(Path haystack, char needle) {
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(haystack);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return lines.stream()
+            .parallel()
+            .mapToInt(l -> count(l, needle))
+            .sum();
+    }
+
+    public static void main(String[] args) {
+        Path dir = Paths.get("/home/thomas/git/cp2018/exercises/src/cp/week12/as/");
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        List<Future> futures;
+        try {
+            futures = Files.list(dir)
+                .map(p -> executor.submit(() -> count(p, 'a')))
+                .collect(toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        executor.shutdown();
+
+        int sum = 0;
+        for (Future f : futures) {
+            try {
+                sum += (int)f.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(sum);
+
+    }
 }
