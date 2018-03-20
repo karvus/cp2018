@@ -1,10 +1,13 @@
 package cp.week12;
 
 
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
@@ -31,21 +34,15 @@ public class Exercise22
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
-	static void countInto(Path file, char c, AtomicInteger ai) {
-        ai.addAndGet(util.count(file, c));
-    }
-
-//    private static int countOrMaybeAddFuture(Path file, Shared shared) {
-//        if (file.toString().endsWith(".dat")) {
-//            shared.futureBs.add(shared.executor.submit(() -> util.count(file, 'b')));
-//            return 0;
-//        } else if (file.toString().endsWith(".txt")) {
-//            return util.count(file, 'a');
-//        } else
-//            return 0;
-//    }
-
-	private static int countInDir(Path dir, char needle, Shared shared) {
+    /**
+     *  Return the sum of a's in the supplied directory.  Also submits futures that
+     *  count all b's in .dat-files inside said directory, to shared.futureBs.
+     *
+     * @param dir Path of directory to be processed
+     * @param shared the shared data structures
+     * @return the sum of a's in .txt-files inside dir
+     */
+	private static int countInDir(Path dir, Shared shared) {
         try {
             return Files.list(dir)
                 .filter(p -> Files.isRegularFile(p))
@@ -66,7 +63,8 @@ public class Exercise22
         }
     }
 
-    static int sumFutures(Collection<Future<Integer>> futures) {
+    // Return the sum of all the supplied futures, all of which resolves to Integers
+    private static int sumFutures(Collection<Future<Integer>> futures) {
         return futures.stream()
             .mapToInt(f -> {
                 try {
@@ -86,7 +84,7 @@ public class Exercise22
         try {
             futures = Files.walk(dir)
                 .filter(Files::isDirectory)
-                .map(p -> shared.executor.submit(() -> countInDir(p, 'a', shared)))
+                .map(p -> shared.executor.submit(() -> countInDir(p, shared)))
                 .collect(toList());
         } catch (IOException e) {
             e.printStackTrace();
