@@ -65,5 +65,5 @@ public class Exercise21
             }
         }
         System.out.println(sum);
-    }
+    }    
 }

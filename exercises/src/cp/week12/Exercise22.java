@@ -1,6 +1,5 @@
 package cp.week12;
 
-
 import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.io.IOException;
@@ -15,10 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toList;
 
-/**
- *
- * @author Fabrizio Montesi <fmontesi@imada.sdu.dk>
- */
 public class Exercise22
 {
 	/*
@@ -26,7 +21,6 @@ public class Exercise22
 	- When you find a ".dat" file, launch an executor task that computes how many times the letter "b" is present in the file.
 	- At the end, the program should print *separately*: The number of "a", and the number of "b".
 	*/
-
 	// Class that encapsulates the shared data in the program.
     static class Shared {
         final ConcurrentLinkedQueue<Future<Integer>> futureBs = new ConcurrentLinkedQueue<>();
