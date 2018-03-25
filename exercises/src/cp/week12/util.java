@@ -16,16 +16,15 @@ public class util {
     }
 
     static int count(Path file, char needle) {
-        List<String> lines;
         try {
-            lines = Files.readAllLines(file);
+            return Files.lines()
+            .parallel()
+            .mapToInt(l -> count(l, needle))
+            .sum();
         } catch (IOException e) {
             e.printStackTrace();
             return 0;
         }
-        return lines.stream()
-            .parallel()
-            .mapToInt(l -> count(l, needle))
-            .sum();
+
     }
 }

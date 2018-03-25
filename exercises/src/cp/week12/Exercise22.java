@@ -42,7 +42,8 @@ public class Exercise22
                 .filter(p -> Files.isRegularFile(p))
                 .mapToInt(p -> {
                     if (p.toString().endsWith(".dat")) {
-                        shared.futureBs.add(shared.executor.submit(() -> util.count(p, 'b')));
+                        shared.futureBs.add(shared.executor.submit(() ->
+                                util.count(p, 'b')));
                         return 0;
                     } else if (p.toString().endsWith(".txt")) {
                         return util.count(p, 'a');
