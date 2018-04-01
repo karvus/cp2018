@@ -46,7 +46,7 @@ public class TXTFile {
         return lines;
     }
 
-    // Return the list of getNumbers in the file, possibly reading it in, if not already read.
+    // Return the list of numbers in the file, possibly reading it in, if not already read.
     ConcurrentLinkedDeque<Integer> getNumbers() {
         if (numbers == null) {
             numbers = new ConcurrentLinkedDeque<>();
