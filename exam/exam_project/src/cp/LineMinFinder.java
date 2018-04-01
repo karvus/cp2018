@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 /**
  * Class for finding, with concurrency, a (any) line with a sum Greater than or Equal to a number.
  */
-class LineGEFinder {
+class LineMinFinder {
 
     /**
 	 * This method recursively visits a directory for text files with suffix
