@@ -26,7 +26,7 @@ public class MinCollector {
                 collectMinValues(NumberFiles, results)));
 
         // Gather paths of the .txt-files.  Performed in this (main) thread.
-        Utils.collectCSIFiles(dir, NumberFiles, Utils.TXT_MATCHER);
+        Utils.collectCSIFiles(dir, NumberFiles, NumberFile.TXT_MATCHER);
 
         // At this point, no more paths will be added to the queue, so we feed the poison pill,
         // prompting our consumers to exit.

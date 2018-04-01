@@ -61,7 +61,7 @@ class LineGEFinder {
         try {
             //noinspection ResultOfMethodCallIgnored
             Files.walk(dir)
-                .filter(p -> Files.isRegularFile(p) && Utils.DAT_MATCHER.matches(p))
+                .filter(p -> Files.isRegularFile(p) && NumberFile.DAT_MATCHER.matches(p))
                 .allMatch(p-> paths.add(p) && !futureResult.isDone());
         } catch (IOException e) {
             e.printStackTrace();

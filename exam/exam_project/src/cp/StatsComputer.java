@@ -36,7 +36,7 @@ public class StatsComputer {
 
         // Produce *{.txt,.dat}-files, for collectors to consume, finally feeding
         // a poison pill, and waiting for completion of the collectors.
-        Utils.collectCSIFiles(dir, NumberFiles, Utils.TXTDAT_MATCHER);
+        Utils.collectCSIFiles(dir, NumberFiles, NumberFile.TXTDAT_MATCHER);
         NumberFiles.add(POISON_PILL);
         Utils.shutdownAndAwait(collectors);
 

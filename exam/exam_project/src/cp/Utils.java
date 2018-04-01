@@ -10,13 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
 
-    public static final PathMatcher TXT_MATCHER =
-        FileSystems.getDefault().getPathMatcher("glob:**.txt");
-    public static final PathMatcher DAT_MATCHER =
-        FileSystems.getDefault().getPathMatcher("glob:**.dat");
-    public static final PathMatcher TXTDAT_MATCHER =
-        FileSystems.getDefault().getPathMatcher("glob:**.{txt,dat}");
-
     static void shutdownAndAwait(ExecutorService executor) {
         executor.shutdown();
         try {
