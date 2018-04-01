@@ -67,7 +67,7 @@ public class MinCollector {
     }
 
     public static void main(String[] args) {
-        Path dir = Paths.get("/home/thomas/git/dm519-exam/data_example/");
+        Path dir = Paths.get("/home/thomas/git/cp2018/exam/data_example/");
         List<Result> results = Exam.m1(dir);
         results.forEach(System.out::println);
     }
