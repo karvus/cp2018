@@ -8,30 +8,31 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
-public class MinLineSumFinder {
+public class LineGEFinder {
 
     /**
-     * This method recursively visits a directory for text files with suffix
-     * ".dat" (notice that it is different than the one before)
-     * contained in it and its subdirectories.
-     * <p>
-     * You must consider only files ending with a .dat suffix.
-     * You are guaranteed that they will be text files.
-     * <p>
-     * Each .dat file contains some lines of text,
-     * separated by the newline character "\n".
-     * You can assume that each line contains a (non-empty)
-     * comma-separated sequence of
-     * numbers. For example: 100,200,34,25
-     * <p>
-     * This method looks for a .dat file that contains a line whose numbers,
-     * when added together (total), amount to at least (>=) parameter min.
-     * Once this is found, the method can return immediately
-     * (without waiting to analyse also the other files).
-     * The return value is a result that contains:
-     * - path: the path to the text file that contains the line that respects the condition;
-     * - number: the line number, starting from 1 (e.g., 1 if it is the first line, 3 if it is the third, etc.)
-     */
+	 * This method recursively visits a directory for text files with suffix
+	 * ".dat" (notice that it is different than the one before)
+	 * contained in it and its subdirectories.
+	 *
+	 * You must consider only files ending with a .dat suffix.
+	 * You are guaranteed that they will be text files.
+	 *
+	 * Each .dat file contains some lines of text,
+	 * separated by the newline character "\n".
+	 * You can assume that each line contains a (non-empty)
+	 * comma-separated sequence of
+	 * numbers. For example: 100,200,34,25
+	 *
+	 * This method looks for a .dat file that contains a line whose numbers,
+	 * when added together (total), amount to at least (>=) parameter min.
+	 * Once this is found, the method can return immediately
+	 * (without waiting to analyse also the other files).
+	 * The return value is a result that contains:
+	 *	- path: the path to the text file that contains the line that respects the condition;
+	 *  - number: the line number, starting from 1 (e.g., 1 if it is the first line, 3 if it is the third, etc.)
+	 *
+	 */
 
     private static final Path POISON_PILL = Paths.get("POISON_PILL");
 

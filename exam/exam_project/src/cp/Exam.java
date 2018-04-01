@@ -66,7 +66,7 @@ public class Exam
 	 */
 	public static Result m2( Path dir, int min )
 	{
-        return MinLineSumFinder.find(dir, min);
+        return LineGEFinder.find(dir, min);
 	}
 	
 	/**
