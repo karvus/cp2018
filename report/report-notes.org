@@ -1,0 +1,13 @@
+
+- maybe sum should use long (m3)
+- choice of data structures
+  - LongAdder good for high contention
+  - using ConcurrentSkipListSet for the n log n "free" in threads
+    - alternative is eventually sorting in main thread at n log n cost
+      - but in one thread
+- if there are any misformed files in the dataset, threads will
+  silently fail
+  - because runtime/unchecked exceptions are silently ignored
+  - for example, if file
+- readline + splitting is bad if there is a large number of
+  ... numbers, on a line

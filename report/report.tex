@@ -1,0 +1,120 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.89]{inconsolata}
+\author{Thomas Stenhaug \texttt{<tsten16@student.sdu.dk>}}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=4cm,right=4cm]{geometry}
+\usepackage[iso,danish]{isodate}
+\usepackage{fancyvrb}
+%\usepackage{fancyhdr}
+% \pagestyle{fancy}
+% \fancyhf{}
+% \lhead{T. Stenhaug}
+% \rhead{DM519 exam \quad \quad \quad \today}
+% \chead{}
+% \lfoot{}
+% \cfoot{\thepage}
+% \rfoot{}
+%\renewcommand{\footrulewidth}{0pt} %
+%\setcounter{secnumdepth}{2}
+%\setcounter{tocdepth}{2}
+\date{\today}
+\title{DM519 Spring 2018 Exam}
+\begin{document}
+
+\maketitle
+
+\setlength{\baselineskip}{1.44\baselineskip}
+
+\section{Methodology}
+
+The central units of work in the project, are files containing a
+plaintext line of comma separated integer-values.  I have chosen to
+make a wrapper-class \texttt{NumberFile} around Java's \texttt{Path}s to
+facilitate working with these files.
+
+A trait shared between my solutions to \texttt{m1, m2} and
+\texttt{m3}, is that they instantiate a
+\texttt{BlockingDeque<NumberFile>} as the main shared datastructure for
+production and consumption.  Initially, an executor for consumers,
+with one consumer for each processor, is created.  A producer then
+runs from the main thread, producing to the
+\texttt{BlockingDeque<NumberFile>}.  The producer runs in the main
+thread, because the operation is I/O-bound, so it didn't seem worth it
+to invest complexity in distributing the work over threads.  (Although
+it uses \texttt{parallel()} in a stream-chain, just in case the JRE
+knows how to optimize it.)
+
+While the main-thread is producing work-units, the consumers, one for
+each processor, accepts and performs their work.
+
+\subsection{Synchronizing when consumers are done}
+
+For \texttt{m1} and \texttt{m3}, the mechanism for synchronizing the
+consumers is a poison pill, that is fed to the queue of
+\texttt{NumberFile}s.  The consumers gracefully exit their loop after
+encountering the poison pill, so after finishing producing work, the
+main thread shuts down the executor, and \texttt{await}s it, which
+will block until consumers are all done.  In the case of \texttt{m1},
+that concludes its job.  \texttt{m3} instead, needs to do some
+additional computations on the collected data.  These computations are
+run in parallel, governed by a separate executor.  Here, the
+synchronization is implemented by waiting for said computations as
+futures, while constructing the final result.
+
+\texttt{m2} is different, because instead of the result being an
+aggregate of all files, it is an arbitrary element from the
+\texttt{BlockingDeque<NumberFile>}, matching some criteria.  This element
+is represented by a \texttt{CompletableFuture}, which is waited for in
+the main thread after production of \texttt{NumberFiles} is completed,
+and is completed by the first consumers that find an element matching
+the criteria.  Consumers exit either when they discover that the
+\texttt{CompletableFuture} is completed, or they are cancelled as a
+result of their executor being shut down.
+
+\subsection{Post processing}
+
+While \texttt{m1} and \texttt{m2} are done with their work when their
+consumers terminate, \texttt{m3} requires post-processing.  Its
+consumers are also producers, adding work to a handful of concurrent
+datastructures.   
+
+\section{Advantages}
+
+\subsection{Choice of datastructures, performance}
+
+I chose to use ``off-the-shelf'' datastructures for this, instead of
+writing my own.  For example, two return-values are the least and most
+frequently occuring number.  I chose a \texttt{ConcurrentMap<Integer,
+  LongAdder>} for this purpose, which I update like so:
+
+\begin{verbatim}
+frequencies.computeIfAbsent(i, k -> new LongAdder()).increment();
+\end{verbatim}
+
+This results in lock-free, thread-safe operation on this
+high-contention data.
+
+One of the return values from \texttt{m3} is an ordered
+\texttt{List<Path>}.  Initially I thought to populate a
+\texttt{ConcurrentLinkedQueue} in the consumers, and obtain the
+ordering during the post-processing.  This would be an \(O(n \lg n) \)
+operation, in a single thread.  Instead I chose a
+\texttt{ConcurrentSkipListSet}, which maintains $O(\lg n)$ for
+insertion, but with ``for free'' parallelization, since the operation
+is already spread across the parallelized consumers.
+
+\section{Limitations}
+
+Aliquam erat volutpat.  Nunc eleifend leo vitae magna.  In id erat non
+orci commodo lobortis.  Proin neque massa, cursus ut, gravida ut,
+Mlobortis eget, lacus.  Sed diam.  Praesent fermentum tempor tellus.
+Nullam tempus.  Mauris ac felis vel velit tristique imperdiet.  Donec
+at pede.  Etiam vel neque nec dui dignissim bibendum.  Vivamus id
+enim.  Phasellus neque orci, porta a, aliquet quis, semper a, massa.
+Phasellus purus.  Pellentesque tristique imperdiet tortor.  Nam
+euismod tellus id erat.
+
+
+
+\end{document}
