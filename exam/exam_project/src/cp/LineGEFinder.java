@@ -38,8 +38,6 @@ class LineGEFinder {
 	 *
 	 */
 
-    private static final Path POISON_PILL = Paths.get("POISON_PILL");
-
     static Result find(Path dir, int min) {
 
         // the future that will hold the result.  This is used by both main thread and consumers.
@@ -67,9 +65,7 @@ class LineGEFinder {
             e.printStackTrace();
         }
 
-        paths.add(POISON_PILL);
-
-        // Wait for futureResult to be completed in one of the consumers.
+            // Wait for futureResult to be completed in one of the consumers.
         Result result = null;
         try {
             result = futureResult.get(1, TimeUnit.MINUTES);
@@ -94,10 +90,6 @@ class LineGEFinder {
         while (!result.isDone()) {
             try {
                 Path path = paths.take();
-                if (path == POISON_PILL) {
-                    paths.put(POISON_PILL);
-                    break;
-                }
 
                 List<String> lines = Files.readAllLines(path);
                 int i = 1;
