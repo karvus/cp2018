@@ -85,9 +85,10 @@ datastructures.
 \subsection{Choice of datastructures, performance}
 
 I chose to use ``off-the-shelf'' concurrent datastructures for this,
-instead of writing my own.  For example, two return-values are the
-least and most frequently occuring number.  I chose a
-\texttt{ConcurrentMap<Integer, LongAdder>} for this purpose, which I
+instead of writing my own.  In \texttt{m3}, for example, I keep a
+\texttt{ConcurrentMap<Integer, LongAdder>} which keeps a tally of
+number → occurences.  Consumer threads are all writing to this
+structure, so it is in high contention.  I update it like so
 update like so:
 
 \begin{verbatim}
@@ -102,9 +103,9 @@ One of the return values from \texttt{m3} is an ordered
 \texttt{ConcurrentLinkedQueue} in the consumers, and obtain the
 ordering during the post-processing.  This would be an \(O(n \lg n) \)
 operation, in a single thread.  Instead I chose a
-\texttt{ConcurrentSkipListSet}, which maintains $O(\lg n)$ for
-insertion, but with ``for free'' parallelization, since the operation
-is spread across the already parallelized consumers.
+\texttt{ConcurrentSkipListSet}, which maintains $O(\lg n)$ for each
+$n$ insertions, but with ``for free'' parallelization, since the
+operation is spread across the already parallelized consumers.
 
 \section{Limitations}
 
@@ -120,8 +121,11 @@ Method-signatures are somewhat noisy and possibly hard to read,
 especially for \texttt{StatsComputer}.  This could have been improved
 by introducing abstractions over the arguments.
 
-There is no rime nor rythm to exception-handling; instead, exceptions
+There is no rhyme nor rythm to exception-handling; instead, exceptions
 are mostly silently ignored.
+
+No tests are supplied, so changing the program requires
+experimentation and eyeballing to assess its correctness.
 
 
 \end{document}
