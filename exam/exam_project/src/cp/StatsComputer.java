@@ -96,7 +96,7 @@ public class StatsComputer {
     }
 
     public static void main(String[] args) {
-        Path dir = Paths.get("/home/thomas/git/dm519-exam/data_example/");
+        Path dir = Paths.get("/home/thomas/git/cp2018/exam/data_example/");
         Stats stats = compute(dir);
         System.out.println(stats);
         System.out.println(stats.occurrences(4432324));
