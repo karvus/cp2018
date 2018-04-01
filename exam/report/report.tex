@@ -83,10 +83,11 @@ datastructures.
 
 \subsection{Choice of datastructures, performance}
 
-I chose to use ``off-the-shelf'' datastructures for this, instead of
-writing my own.  For example, two return-values are the least and most
-frequently occuring number.  I chose a \texttt{ConcurrentMap<Integer,
-  LongAdder>} for this purpose, which I update like so:
+I chose to use ``off-the-shelf'' concurrent datastructures for this,
+instead of writing my own.  For example, two return-values are the
+least and most frequently occuring number.  I chose a
+\texttt{ConcurrentMap<Integer, LongAdder>} for this purpose, which I
+update like so:
 
 \begin{verbatim}
 frequencies.computeIfAbsent(i, k -> new LongAdder()).increment();
@@ -106,14 +107,10 @@ is already spread across the parallelized consumers.
 
 \section{Limitations}
 
-Aliquam erat volutpat.  Nunc eleifend leo vitae magna.  In id erat non
-orci commodo lobortis.  Proin neque massa, cursus ut, gravida ut,
-Mlobortis eget, lacus.  Sed diam.  Praesent fermentum tempor tellus.
-Nullam tempus.  Mauris ac felis vel velit tristique imperdiet.  Donec
-at pede.  Etiam vel neque nec dui dignissim bibendum.  Vivamus id
-enim.  Phasellus neque orci, porta a, aliquet quis, semper a, massa.
-Phasellus purus.  Pellentesque tristique imperdiet tortor.  Nam
-euismod tellus id erat.
+Every file is read into memory, and never released in order to be
+garbage collected.  For small inputs, this should be fine, but for
+large inputs it would be devastating.
+
 
 
 
