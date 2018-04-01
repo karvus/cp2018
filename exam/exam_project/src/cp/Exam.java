@@ -38,7 +38,7 @@ public class Exam
 	 */
 	public static List< Result > m1( Path dir )
 	{
-		throw new UnsupportedOperationException();
+            return MinCollector.collect(dir);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class Exam
 	 */
 	public static Result m2( Path dir, int min )
 	{
-		throw new UnsupportedOperationException();
+        return MinLineSumFinder.find(dir, min);
 	}
 	
 	/**
@@ -78,6 +78,6 @@ public class Exam
 	 */
 	public static Stats m3( Path dir )
 	{
-		throw new UnsupportedOperationException();
+		return StatsComputer.compute(dir);
 	}
 }
