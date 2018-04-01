@@ -34,7 +34,7 @@ public class StatsComputer {
                 .forEach(i -> collectors.submit(() ->
                         collectStats(TXTFiles, occurrences, totals)));
 
-        // Produce .txt-files, for collectors to consume, finally feeding
+        // Produce *{.txt,.dat}-files, for collectors to consume, finally feeding
         // a poison pill, and waiting for completion of the collectors.
         Utils.collectCSIFiles(dir, TXTFiles, Utils.TXTDAT_MATCHER);
         TXTFiles.add(POISON_PILL);
