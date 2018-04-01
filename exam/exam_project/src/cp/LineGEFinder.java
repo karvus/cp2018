@@ -80,7 +80,8 @@ class LineGEFinder {
                 " within reasonable time.");
         }
 
-        // We got the result; forcefully shut down any remaining consumers, and return final result.
+        // We got the result; forcefully shut down any consumers that didn't exit by way of eating
+        // a poison pill, and return final result.
         fileConsumers.shutdownNow();
         lineConsumers.shutdownNow();
         return result;
