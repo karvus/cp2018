@@ -72,7 +72,7 @@ class LineGEFinder {
         // Wait for futureResult to be completed in one of the consumers.
         Result result = null;
         try {
-            result = futureResult.get(10, TimeUnit.SECONDS);
+            result = futureResult.get(1, TimeUnit.MINUTES);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
