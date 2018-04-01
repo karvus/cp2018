@@ -237,4 +237,4 @@ TSWLatexianTemp*
 *.sta
 /exercises/.gitignore
 uiDesigner.xml
-exam/report/report.pdf
+/exam/report/report.pdf
