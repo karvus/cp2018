@@ -9,26 +9,26 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-// Represents a text-file with comma-separated integer values.  (That is, a CSI file.)
-public class TXTFile {
+// Represents a text-file with one or more comma-separated integer values.
+public class NumberFile {
 
     private final Path path;
     private ConcurrentLinkedDeque<Integer> numbers;
     private List<String> lines;
 
-    TXTFile(Path path) {
+    NumberFile(Path path) {
         this.path = path;
     }
 
     // constructor meant for making poison pills
-    private TXTFile() {
+    private NumberFile() {
         this.path = null;
         this.numbers = null;
     }
 
     // Return an object suitable for use as a poison pill.
-    static TXTFile getPoisonPill() {
-        return new TXTFile();
+    static NumberFile getPoisonPill() {
+        return new NumberFile();
     }
 
     Path path() {

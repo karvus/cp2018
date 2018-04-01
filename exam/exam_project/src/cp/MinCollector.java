@@ -12,25 +12,25 @@ import java.util.stream.IntStream;
 public class MinCollector {
 
     // sentinel meaning that nothing more will be added to a queue
-    private final static TXTFile POISON_PILL = TXTFile.getPoisonPill();
+    private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
     static List<Result> collect(Path dir) {
         Deque<Result> results = new ConcurrentLinkedDeque<>();
-        BlockingDeque<TXTFile> TXTFiles = new LinkedBlockingDeque<>();
+        BlockingDeque<NumberFile> NumberFiles = new LinkedBlockingDeque<>();
 
         // Start consumers first, so they are ready to begin consuming
         // .txt-paths as soon as these become available.
         ExecutorService consumerExecutor = Executors.newWorkStealingPool();
         IntStream.range(0, Runtime.getRuntime().availableProcessors())
             .forEach(i -> consumerExecutor.submit(() ->
-                collectMinValues(TXTFiles, results)));
+                collectMinValues(NumberFiles, results)));
 
         // Gather paths of the .txt-files.  Performed in this (main) thread.
-        Utils.collectCSIFiles(dir, TXTFiles, Utils.TXT_MATCHER);
+        Utils.collectCSIFiles(dir, NumberFiles, Utils.TXT_MATCHER);
 
         // At this point, no more paths will be added to the queue, so we feed the poison pill,
         // prompting our consumers to exit.
-        TXTFiles.addLast(POISON_PILL);
+        NumberFiles.addLast(POISON_PILL);
 
         Utils.shutdownAndAwait(consumerExecutor);
 
@@ -41,11 +41,11 @@ public class MinCollector {
 
     // Take CSIFiles, until a poison pill is found, compute min-value for each file, and
     // add results to minValues.
-    private static void collectMinValues(BlockingDeque<TXTFile> paths, Deque<Result> minValues) {
+    private static void collectMinValues(BlockingDeque<NumberFile> paths, Deque<Result> minValues) {
 
         // Take paths as long as we're not cancelled
         while (!Thread.currentThread().isInterrupted()) {
-            TXTFile file;
+            NumberFile file;
 
             try {
                 file = paths.take();

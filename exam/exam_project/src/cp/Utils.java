@@ -27,7 +27,7 @@ public class Utils {
     }
 
     static void collectCSIFiles(Path start,
-                                BlockingDeque<TXTFile> txtFiles,
+                                BlockingDeque<NumberFile> numberFiles,
                                 PathMatcher matcher)
     {
         AtomicInteger count = new AtomicInteger();
@@ -37,7 +37,7 @@ public class Utils {
                 .filter(p -> Files.isRegularFile(p) && matcher.matches(p))
                 .forEach(p -> {
                     try {
-                        txtFiles.add(new TXTFile(p));
+                        numberFiles.add(new NumberFile(p));
                         count.getAndIncrement();
                     } catch (NumberFormatException e) {
                         System.err.printf("Warning: malformed file \"%s\", ignoring.\n", p);

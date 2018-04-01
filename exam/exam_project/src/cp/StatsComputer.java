@@ -12,12 +12,12 @@ import static java.util.stream.Collectors.toList;
 public class StatsComputer {
 
     // Sentinel meaning that nothing more will be added to a queue.
-    private final static TXTFile POISON_PILL = TXTFile.getPoisonPill();
+    private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
     static Stats compute(Path dir) {
 
         // holds Paths to .txt-files, where producer is the main thread.
-        BlockingDeque<TXTFile> TXTFiles = new LinkedBlockingDeque<>();
+        BlockingDeque<NumberFile> NumberFiles = new LinkedBlockingDeque<>();
 
         // These data-structures are written to by collector-threads during
         // the first phase, and correspond to the Stats items we eventually
@@ -32,12 +32,12 @@ public class StatsComputer {
         ExecutorService collectors = Executors.newCachedThreadPool();
         IntStream.range(0, Runtime.getRuntime().availableProcessors())
                 .forEach(i -> collectors.submit(() ->
-                        collectStats(TXTFiles, occurrences, totals)));
+                        collectStats(NumberFiles, occurrences, totals)));
 
         // Produce *{.txt,.dat}-files, for collectors to consume, finally feeding
         // a poison pill, and waiting for completion of the collectors.
-        Utils.collectCSIFiles(dir, TXTFiles, Utils.TXTDAT_MATCHER);
-        TXTFiles.add(POISON_PILL);
+        Utils.collectCSIFiles(dir, NumberFiles, Utils.TXTDAT_MATCHER);
+        NumberFiles.add(POISON_PILL);
         Utils.shutdownAndAwait(collectors);
 
         // Fire up an executor to handle the remaining computation tasks.
@@ -71,20 +71,20 @@ public class StatsComputer {
     // Collect statistics about .txt-files into shared data structures.
     // These are consumers/producers, governed by the "collectors" executor
     // in main thread.
-    private static void collectStats(BlockingDeque<TXTFile> TXTFiles,
+    private static void collectStats(BlockingDeque<NumberFile> NumberFiles,
                                      ConcurrentMap<Integer, LongAdder> occurrences,
                                      ConcurrentSkipListSet<Total> totals) {
         while (!Thread.currentThread().isInterrupted()) {
-            TXTFile file;
+            NumberFile file;
             try {
-                file = TXTFiles.take();
+                file = NumberFiles.take();
             } catch (InterruptedException e) {
                 // We might be cancelled by a shutdown of the collectors executor
                 // in the main thread, no sweat.
                 break;
             }
             if (file == POISON_PILL) {
-                TXTFiles.add(POISON_PILL);
+                NumberFiles.add(POISON_PILL);
                 break;
             }
 
