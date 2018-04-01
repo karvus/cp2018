@@ -68,7 +68,7 @@ public class StatsComputer {
         return stats;
     }
 
-    // Collect statistics about .txt-files into shared data structures.
+    // Collect statistics about NumberFiles into shared data structures.
     // These are consumers/producers, governed by the "collectors" executor
     // in main thread.
     private static void collectStats(BlockingDeque<NumberFile> NumberFiles,
@@ -133,6 +133,7 @@ public class StatsComputer {
             this.lowestFrequency = lowestFrequency;
         }
 
+        // Take map of number -> occurrences, and return an object with statistics.
         private static FrequencyStats get(ConcurrentMap<Integer, LongAdder> occurrences) {
             int leastFrequent = -1, lowestFrequency = Integer.MAX_VALUE;
             int mostFrequent = -1, highestFrequency = Integer.MIN_VALUE;
