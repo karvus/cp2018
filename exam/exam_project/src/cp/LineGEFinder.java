@@ -94,8 +94,11 @@ class LineGEFinder {
         while (!result.isDone()) {
             try {
                 Path path = paths.take();
-                if (path == POISON_PILL)
+                if (path == POISON_PILL) {
+                    paths.put(POISON_PILL);
                     break;
+                }
+
                 List<String> lines = Files.readAllLines(path);
                 int i = 1;
                 for (String line : lines) {
