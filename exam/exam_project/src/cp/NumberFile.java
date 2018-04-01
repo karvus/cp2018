@@ -35,8 +35,9 @@ public class NumberFile {
         return path;
     }
 
+    // Return a list of lines in the file, read them first if it's the first time we're called.
     private List<String> getLines() {
-        if (lines == null) {    // means we have been called before, no need to redo
+        if (lines == null) {    //we have been called before
             try {
                 lines = Files.readAllLines(Objects.requireNonNull(path));
             } catch (IOException e) {
@@ -48,7 +49,7 @@ public class NumberFile {
 
     // Return the list of numbers in the file, possibly reading it in, if not already read.
     ConcurrentLinkedDeque<Integer> getNumbers() {
-        if (numbers == null) {
+        if (numbers == null) {  // we have been called before
             numbers = new ConcurrentLinkedDeque<>();
             for (String line : getLines()) {
                 Arrays.stream(line.split(",")).
