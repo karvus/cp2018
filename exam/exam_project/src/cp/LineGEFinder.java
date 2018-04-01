@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
-public class LineGEFinder {
+
+/**
+ * Class for finding, with concurrency, a (any) line with a sum Greater than or Equal to a number.
+ */
+class LineGEFinder {
 
     /**
 	 * This method recursively visits a directory for text files with suffix
