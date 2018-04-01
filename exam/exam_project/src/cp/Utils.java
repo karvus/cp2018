@@ -19,9 +19,9 @@ public class Utils {
         }
     }
 
-    static void collectCSIFiles(Path start,
-                                BlockingDeque<NumberFile> numberFiles,
-                                PathMatcher matcher)
+    static void collectNumberFiles(Path start,
+                                   BlockingDeque<NumberFile> numberFiles,
+                                   PathMatcher matcher)
     {
         AtomicInteger count = new AtomicInteger();
         try {
