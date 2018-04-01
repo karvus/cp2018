@@ -36,7 +36,7 @@ public class TXTFile {
     }
 
     private List<String> getLines() {
-        if (lines == null) {
+        if (lines == null) {    // means we have been called before, no need to redo
             try {
                 lines = Files.readAllLines(Objects.requireNonNull(path));
             } catch (IOException e) {
