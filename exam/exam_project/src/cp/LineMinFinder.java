@@ -60,6 +60,7 @@ class LineMinFinder {
             //noinspection ResultOfMethodCallIgnored
             Files.walk(dir)
                 .filter(p -> Files.isRegularFile(p) && NumberFile.DAT_MATCHER.matches(p))
+                // if we have already found a matching line, don't put more files in
                 .allMatch(p-> paths.add(p) && !futureResult.isDone());
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,7 +73,7 @@ class LineMinFinder {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
-            System.out.println("Error: couldn't find a file with a line that sums up to " + min +
+            System.out.println("Error: couldn't find a file with a line that sums up to at least" + min +
                 " within reasonable time.");
         }
 

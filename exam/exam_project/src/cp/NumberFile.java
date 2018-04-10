@@ -46,7 +46,7 @@ public class NumberFile {
 
     // Return the list of numbers in the file, possibly reading it in, if not already read.
     ConcurrentLinkedDeque<Integer> getNumbers() {
-        if (numbers == null) {  // we have been called before
+        if (numbers == null) {  // we haven't been called before
             numbers = new ConcurrentLinkedDeque<>();
             try {
                 lines = Files.readAllLines(Objects.requireNonNull(path));
