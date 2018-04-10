@@ -67,11 +67,16 @@ aggregate of all files, it is an arbitrary element from the
 \texttt{BlockingDeque<NumberFile>}, matching some criteria.  This
 element is represented by a \texttt{CompletableFuture}, which is
 waited for in the main thread after, production of
-\texttt{NumberFiles} is completed, and is completed by the first
-consumers that find an element matching the criteria.  Consumers exit
-either when they discover that the \texttt{CompletableFuture} is
-completed, or they are cancelled as a result of their executor being
-shut down.
+\texttt{NumberFiles} is completed
+\footnote{Please note that
+  production of numberfiles will also shortcut, when the
+  \texttt{CompletableFuture} is done.  This is achieved by a pun on
+  the stream operator \texttt{allMatch}
+}, and is completed by
+the first consumers that find an element matching the criteria.
+Consumers exit either when they discover that the
+\texttt{CompletableFuture} is completed, or they are cancelled as a
+result of their executor being shut down.
 
 \subsection{Post processing}
 
@@ -107,21 +112,12 @@ operation, in a single thread.  Instead I chose a
 $n$ insertions, but with ``for free'' parallelization, since the
 operation is spread across the already parallelized consumers.
 
-TODO: add explanation about how I shortcut processing in m2,
-specifically
-
-\begin{verbatim}
-Files.walk(dir)
-    .filter(p -> Files.isRegularFile(p) && NumberFile.DAT_MATCHER.matches(p))
-    // if we have already found a line-sum >= min, don't put more files in
-   . allMatch(p-> paths.add(p) && !futureResult.isDone());
-\end{verbatim}
-
 \section{Limitations}
 
 Every line in the files are read into memory in their entirety.  For
-small inputs, this should be fine.  In a scenario where there are many
-processors, little RAM and large lines, it could be a problem.
+small inputs, this should be fine.  In scenarios where number of
+processors grow, RAM per thread shrinks and line size grows, it
+becomes a problem.
 
 There are many occurrences of streams-usage, which would be likely be
 faster if written out explicitly as loops.
