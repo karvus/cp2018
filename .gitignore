@@ -238,3 +238,4 @@ TSWLatexianTemp*
 /exercises/.gitignore
 uiDesigner.xml
 /exam/report/report.pdf
+/exam/exam_project/build/
