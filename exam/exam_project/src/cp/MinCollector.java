@@ -19,20 +19,20 @@ public class MinCollector {
         BlockingDeque<NumberFile> NumberFiles = new LinkedBlockingDeque<>();
 
         // Start consumers first, so they are ready to begin consuming
-        // .txt-paths as soon as these become available.
-        ExecutorService consumerExecutor = Executors.newWorkStealingPool();
+        // NumberFiles as soon as these become available.
+        ExecutorService consumers = Executors.newWorkStealingPool();
         IntStream.range(0, Runtime.getRuntime().availableProcessors())
-            .forEach(i -> consumerExecutor.submit(() ->
+            .forEach(i -> consumers.submit(() ->
                 collectMinValues(NumberFiles, results)));
 
-        // Gather paths of the .txt-files.  Performed in this (main) thread.
+        // Gather NumberFiles.  Performed in this (main) thread.
         Utils.collectNumberFiles(dir, NumberFiles, NumberFile.TXT_MATCHER);
 
         // At this point, no more paths will be added to the queue, so we feed the poison pill,
         // prompting our consumers to exit.
         NumberFiles.addLast(POISON_PILL);
 
-        Utils.shutdownAndAwait(consumerExecutor);
+        Utils.shutdownAndAwait(consumers);
 
         System.out.printf("MinCollector.collect() computed min-values in %d .txt-files.\n",
                 results.size());
