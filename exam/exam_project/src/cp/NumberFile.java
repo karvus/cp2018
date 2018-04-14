@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-// Represents a text-file with one or more comma-separated integer values.
+// Represents a text-file with one or more lines of comma-separated integer values.
 public class NumberFile {
 
     public static final PathMatcher DAT_MATCHER =
