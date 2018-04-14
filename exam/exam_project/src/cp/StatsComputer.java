@@ -88,10 +88,10 @@ public class StatsComputer {
                 NumberFiles.add(POISON_PILL);
                 break;
             }
-
-            file.getNumbers().stream().mapToInt(Integer::intValue).forEach(i ->
-                occurrences.computeIfAbsent(i, k -> new LongAdder()).increment());
-
+            file.getNumbers().stream()
+                .mapToInt(Integer::intValue)
+                .forEach(i ->
+                    occurrences.computeIfAbsent(i, k -> new LongAdder()).increment());
             totals.add(new Total(file.path(), file.sum()));
         }
     }
