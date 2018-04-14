@@ -39,7 +39,7 @@ public class MinCollector {
         return new LinkedList<>(results);
     }
 
-    // Take CSIFiles, until a poison pill is found, compute min-value for each file, and
+    // Take NumberFiles, until a poison pill is found, compute min-value for each file, and
     // add results to minValues.
     private static void collectMinValues(BlockingDeque<NumberFile> paths, Deque<Result> minValues) {
 
