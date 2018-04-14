@@ -20,6 +20,11 @@ public class Main {
         long t = System.currentTimeMillis();
         System.out.println("Run time: " + (t-t0));
         System.out.println(results);
+        t0 = System.currentTimeMillis();
+        results = Synchronous.m1(dir);
+        t = System.currentTimeMillis();
+        System.out.println("Synchronous reference run time: " + (t-t0));
+        System.out.println(results);
         System.out.println();
 
         System.out.println("m2");
