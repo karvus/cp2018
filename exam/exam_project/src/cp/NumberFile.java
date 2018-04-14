@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 // Represents a text-file with one or more lines of comma-separated integer values.
 public class NumberFile {
 
+    // These are matchers for (supposedly) efficient matching of paths
     public static final PathMatcher DAT_MATCHER =
         FileSystems.getDefault().getPathMatcher("glob:**.dat");
     public static final PathMatcher TXTDAT_MATCHER =
@@ -23,7 +24,6 @@ public class NumberFile {
 
     private final Path path;
     private ConcurrentLinkedQueue<Integer> numbers;
-    private List<String> lines;
 
     NumberFile(Path path) {
         this.path = path;
@@ -45,16 +45,17 @@ public class NumberFile {
     }
 
     // Return the list of numbers in the file, possibly reading it in, if not already read.
-
-    ConcurrentLinkedQueue<Integer> getNumbers() {
-        if (numbers == null) {  // we haven't been called before
+    // (This is never invoked in a concurrent manner in the current codebase, but making it
+    // synchronized to be on the safe side, as we change state.)
+    synchronized ConcurrentLinkedQueue<Integer> getNumbers() {
+        if (numbers == null) {  // we haven't been called before, so do the heavy lifting
             numbers = new ConcurrentLinkedQueue<>();
             try {
-                lines = Files.readAllLines(Objects.requireNonNull(path));
+                List<String> lines = Files.readAllLines(Objects.requireNonNull(path));
                 for (String line : lines) {
-                    Arrays.stream(line.split(",")).
-                        map(Integer::parseInt).
-                        forEach(numbers::add);
+                    Arrays.stream(line.split(","))
+                        .map(Integer::parseInt)
+                        .forEach(numbers::add);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 // Implementation of the m1 functionality of the exam project
 public class MinCollector {
 
-    // sentinel meaning that nothing more will be added to a queue
+    // This sentinel means that nothing more will be added to a queue.
     private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
     static List<Result> collect(Path dir) {

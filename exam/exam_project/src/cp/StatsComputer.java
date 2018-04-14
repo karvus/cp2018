@@ -11,12 +11,12 @@ import static java.util.stream.Collectors.toList;
 
 public class StatsComputer {
 
-    // Sentinel meaning that nothing more will be added to a queue.
+    // This sentinel means that nothing more will be added to a queue.
     private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
     static Stats compute(Path dir) {
 
-        // holds Paths to .txt-files, where producer is the main thread.
+        // queue of NumberFiles to be consumed (produced in main thread)
         BlockingDeque<NumberFile> NumberFiles = new LinkedBlockingDeque<>();
 
         // These data-structures are written to by collector-threads during
@@ -47,7 +47,8 @@ public class StatsComputer {
         Future<FrequencyStats> frequencyStats = computers.submit(() ->
                 FrequencyStats.get(occurrences));
 
-        // Compute a sorted list of totals from our SkipListSet of Totals.
+        // Compute a sorted list of totals from our SkipListSet of Totals
+        // in its own thread.
         Future<List<Path>> futureTotals = computers.submit(() ->
                 totals.stream().map(t -> t.file).collect(toList())
         );
@@ -64,7 +65,7 @@ public class StatsComputer {
             throw new RuntimeException(e);
         }
 
-        computers.shutdown(); // no need to wait this time
+        computers.shutdown(); // no need to wait this time, as all results are finalized
         return stats;
     }
 
