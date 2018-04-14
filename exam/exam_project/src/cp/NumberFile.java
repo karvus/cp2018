@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 // Represents a text-file with one or more comma-separated integer values.
 public class NumberFile {
@@ -22,7 +22,7 @@ public class NumberFile {
         FileSystems.getDefault().getPathMatcher("glob:**.txt");
 
     private final Path path;
-    private ConcurrentLinkedDeque<Integer> numbers;
+    private ConcurrentLinkedQueue<Integer> numbers;
     private List<String> lines;
 
     NumberFile(Path path) {
@@ -45,9 +45,10 @@ public class NumberFile {
     }
 
     // Return the list of numbers in the file, possibly reading it in, if not already read.
-    ConcurrentLinkedDeque<Integer> getNumbers() {
+
+    ConcurrentLinkedQueue<Integer> getNumbers() {
         if (numbers == null) {  // we haven't been called before
-            numbers = new ConcurrentLinkedDeque<>();
+            numbers = new ConcurrentLinkedQueue<>();
             try {
                 lines = Files.readAllLines(Objects.requireNonNull(path));
                 for (String line : lines) {
