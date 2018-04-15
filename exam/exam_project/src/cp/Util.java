@@ -19,29 +19,6 @@ public class Util {
         }
     }
 
-    static void collectNumberFiles(Path start,
-                                   BlockingDeque<NumberFile> numberFiles,
-                                   PathMatcher matcher)
-    {
-        AtomicInteger count = new AtomicInteger();
-        try {
-            Files.walk(start)
-                .parallel()
-                .filter(p -> Files.isRegularFile(p) && matcher.matches(p))
-                .forEach(p -> {
-                    try {
-                        numberFiles.add(new NumberFile(p));
-                        count.getAndIncrement();
-                    } catch (NumberFormatException e) {
-                        System.err.printf("Warning: malformed file \"%s\", ignoring.\n", p);
-                    }
-                });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.printf("Collected %d comma separated integer files.\n", count.get());
-    }
-
     static int computeSum(String line) {
         return Arrays.stream(line.split(",")).mapToInt(Integer::parseInt).sum();
     }

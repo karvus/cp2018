@@ -1,3 +1,4 @@
+
 package cp;
 
 import java.nio.file.Path;
@@ -5,13 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.LongAdder;
 
+
+/**
+ * Implementation of the Stats interface, for m3
+ */
 public class ExamStats implements Stats {
     private final Map<Integer, LongAdder> occurrences;
     private final int mostFrequent;
     private final int leastFrequent;
     private final List<Path> byTotals;
 
-    public ExamStats(Map<Integer, LongAdder> occurrences, int mostFrequent,
+    ExamStats(Map<Integer, LongAdder> occurrences, int mostFrequent,
                      int leastFrequent, List<Path> byTotals) {
 
         this.occurrences = occurrences;

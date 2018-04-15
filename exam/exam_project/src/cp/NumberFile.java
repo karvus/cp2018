@@ -9,16 +9,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
-// Represents a text-file with one or more lines of comma-separated integer values.
+/**
+ * Represents a text-file with one or more lines of comma-separated integer values.
+ */
 public class NumberFile {
 
-    // These are matchers for (supposedly) efficient matching of paths
+    /** Matches files ending in ".dat" */
     public static final PathMatcher DAT_MATCHER =
         FileSystems.getDefault().getPathMatcher("glob:**.dat");
+
+    /** Matches files ending in ".txt" or ".dat" */
     public static final PathMatcher TXTDAT_MATCHER =
         FileSystems.getDefault().getPathMatcher("glob:**.{txt,dat}");
+
+    /** Matches files ending in ".txt" */
     public static final PathMatcher TXT_MATCHER =
         FileSystems.getDefault().getPathMatcher("glob:**.txt");
 
@@ -35,19 +43,54 @@ public class NumberFile {
         this.numbers = null;
     }
 
-    // Return an object suitable for use as a poison pill.
-    static NumberFile getPoisonPill() {
+    /**
+     * Return an object suitable for use as a poison pill
+     * @return An object suitable as a poison pill
+     */
+    public static NumberFile getPoisonPill() {
         return new NumberFile();
+    }
+
+    /** Recursively collect NumberFiles matching a criteria into a shared datastructure.
+     *
+     * @param start Path from which to start collecting
+     * @param numberFiles The shared structure to collect into (an out-value)
+     * @param matcher Criteria from which to filter
+     */
+    public static void collectNumberFiles(Path start,
+                                   BlockingDeque<NumberFile> numberFiles,
+                                   PathMatcher matcher) {
+        AtomicInteger count = new AtomicInteger();
+        try {
+            Files.walk(start)
+                .parallel()
+                .filter(p -> Files.isRegularFile(p) && matcher.matches(p))
+                .forEach(p -> {
+                    try {
+                        numberFiles.add(new NumberFile(p));
+                        count.getAndIncrement();
+                    } catch (NumberFormatException e) {
+                        System.err.printf("Warning: malformed file \"%s\", ignoring.\n", p);
+                    }
+                });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.printf("Collected %d comma separated integer files.\n", count.get());
     }
 
     Path path() {
         return path;
     }
 
-    // Return the list of numbers in the file, possibly reading it in, if not already read.
-    // (This is never invoked in a concurrent manner in the current codebase, but making it
-    // synchronized to be on the safe side, as we change state.)
-    synchronized ConcurrentLinkedQueue<Integer> getNumbers() {
+    /**
+     * Return the list of numbers in the file, possibly reading it in, if not already read.
+     *
+     * @return list of numbers in the file
+     */
+    // This is never invoked in a concurrent manner in the current codebase, but making it
+    // synchronized to be on the safe side, as we change state.
+    synchronized public ConcurrentLinkedQueue<Integer> getNumbers() {
         if (numbers == null) {  // we haven't been called before, so do the heavy lifting
             numbers = new ConcurrentLinkedQueue<>();
             try {

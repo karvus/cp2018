@@ -2,6 +2,7 @@ package cp;
 
 import java.nio.file.Path;
 
+/** Implementation of the Stats interface */
 public class ExamResult implements Result {
 
     private final Path path;

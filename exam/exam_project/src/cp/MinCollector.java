@@ -8,12 +8,21 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
-// Implementation of the m1 functionality of the exam project
+/**
+ * @author Thomas Stenhaug
+ * Implementation of the m1 functionality of the exam project.
+ */
 public class MinCollector {
 
     // This sentinel means that nothing more will be added to a queue.
     private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
+
+    /**
+     * Collect the min-value from plain-text files of comma-separated integer values.
+     * @param dir Root of directories to be traversed
+     * @return List of {@link Result}s, path and the min-value of the associated file
+     */
     static List<Result> collect(Path dir) {
         Deque<Result> results = new ConcurrentLinkedDeque<>();
         BlockingDeque<NumberFile> NumberFiles = new LinkedBlockingDeque<>();
@@ -26,7 +35,7 @@ public class MinCollector {
                 collectMinValues(NumberFiles, results)));
 
         // Gather NumberFiles.  Performed in this (main) thread.
-        Util.collectNumberFiles(dir, NumberFiles, NumberFile.TXT_MATCHER);
+        NumberFile.collectNumberFiles(dir, NumberFiles, NumberFile.TXT_MATCHER);
 
         // At this point, no more paths will be added to the queue, so we feed the poison pill,
         // prompting our consumers to exit.
