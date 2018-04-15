@@ -12,12 +12,16 @@ import java.util.List;
  */
 public class Main {
     public static void main(String[] args) {
+
+        Path dir = Paths.get("/home/thomas/git/cp2018/exam/data_example");
+        long t0, t;
+
+
         System.out.println("m1");
         System.out.println("=============================================");
-        Path dir = Paths.get("/home/thomas/git/cp2018/exam/data_example");
-        long t0 = System.currentTimeMillis();
+        t0 = System.currentTimeMillis();
         List<Result> results = cp.Exam.m1(dir);
-        long t = System.currentTimeMillis();
+        t = System.currentTimeMillis();
         System.out.println("Run time: " + (t-t0));
         System.out.println(results);
         t0 = System.currentTimeMillis();
