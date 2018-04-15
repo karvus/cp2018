@@ -16,7 +16,6 @@ public class Main {
         Path dir = Paths.get("/home/thomas/git/cp2018/exam/data_example");
         long t0, t;
 
-
         System.out.println("m1");
         System.out.println("=============================================");
         t0 = System.currentTimeMillis();
