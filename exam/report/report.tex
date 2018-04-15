@@ -35,23 +35,23 @@ facilitate working with these files.
 
 A trait shared between my solutions to \texttt{m1, m2} and
 \texttt{m3}, is that they instantiate a
-\texttt{BlockingDeque<NumberFile>} as the main shared datastructure for
-production and consumption.  Initially, an executor for consumers,
+\texttt{BlockingDeque<NumberFile>} as the main shared datastructure
+for production and consumption.  Initially, an executor for consumers,
 with one consumer for each processor, is created.  A producer then
 runs from the main thread, producing to the
-\texttt{BlockingDeque<NumberFile>}.  The producer runs in the main
-thread, because the operation is I/O-bound, so it didn't seem worth it
-to invest complexity in distributing the work over threads.  (Although
-it uses \texttt{parallel()} in a stream-chain, just in case the JRE
-knows how to optimize it.)
+\texttt{BlockingDeque<NumberFile>}; in the main thread, because the
+operation is I/O-bound, so it didn't seem worth it to invest
+complexity in distributing the work over threads.  (Although it uses
+\texttt{parallel()} in a stream-chain, just in case the JRE knows how
+to optimize it.)
 
-While the main-thread is producing work-units, the consumers, one for
-each processor, accepts and performs their work.
+While the main thread is producing work-units, the consumers, one for
+each processor, accepts and perform their work.
 
 \subsection{Synchronizing when consumers are done}
 
 For \texttt{m1} and \texttt{m3}, the mechanism for synchronizing the
-consumers is a poison pill, that is fed to the queue of
+consumers is a \textit{poison pill} that is fed to the queue of
 \texttt{NumberFile}s.  The consumers gracefully exit their loop after
 encountering the poison pill, so after finishing producing work, the
 main thread shuts down the executor, and \texttt{await}s it, which
@@ -132,5 +132,7 @@ are mostly silently ignored.
 No tests are supplied, so changing the program requires
 experimentation and eyeballing to assess its correctness.
 
+\texttt{m1} in particular has a run-time about double that of a
+reference single-threaded reference implementation.  
 
 \end{document}
