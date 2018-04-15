@@ -110,7 +110,7 @@ ordering during the post-processing.  This would be an \(O(n \lg n) \)
 operation, in a single thread.  Instead I chose a
 \texttt{ConcurrentSkipListSet}, which maintains $O(\lg n)$ for each
 $n$ insertions, but with ``for free'' parallelization, since the
-operation is spread across the already parallelized consumers.
+insertions are spread across the already parallelized consumers.
 
 \section{Limitations}
 
@@ -132,7 +132,7 @@ are mostly silently ignored.
 No tests are supplied, so changing the program requires
 experimentation and eyeballing to assess its correctness.
 
-\texttt{m1} in particular has a run-time about double that of a
-reference single-threaded reference implementation.  
+\texttt{m1} in particular has a worse run-time than that of a
+synchronous reference implementation.
 
 \end{document}
