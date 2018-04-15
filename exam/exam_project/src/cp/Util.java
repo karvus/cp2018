@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Utils {
+public class Util {
 
     static void shutdownAndAwait(ExecutorService executor) {
         executor.shutdown();

@@ -36,9 +36,9 @@ public class StatsComputer {
 
         // Produce *{.txt,.dat}-files, for collectors to consume, finally feeding
         // a poison pill, and waiting for completion of the collectors.
-        Utils.collectNumberFiles(dir, NumberFiles, NumberFile.TXTDAT_MATCHER);
+        Util.collectNumberFiles(dir, NumberFiles, NumberFile.TXTDAT_MATCHER);
         NumberFiles.add(POISON_PILL);
-        Utils.shutdownAndAwait(collectors);
+        Util.shutdownAndAwait(collectors);
 
         // Fire up an executor to handle the remaining computation tasks.
         ExecutorService computers = Executors.newCachedThreadPool();

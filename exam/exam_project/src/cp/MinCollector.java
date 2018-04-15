@@ -26,13 +26,13 @@ public class MinCollector {
                 collectMinValues(NumberFiles, results)));
 
         // Gather NumberFiles.  Performed in this (main) thread.
-        Utils.collectNumberFiles(dir, NumberFiles, NumberFile.TXT_MATCHER);
+        Util.collectNumberFiles(dir, NumberFiles, NumberFile.TXT_MATCHER);
 
         // At this point, no more paths will be added to the queue, so we feed the poison pill,
         // prompting our consumers to exit.
         NumberFiles.addLast(POISON_PILL);
 
-        Utils.shutdownAndAwait(consumers);
+        Util.shutdownAndAwait(consumers);
 
         System.out.printf("MinCollector.collect() computed min-values in %d .txt-files.\n",
                 results.size());
