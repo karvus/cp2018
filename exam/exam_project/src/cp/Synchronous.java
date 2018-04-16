@@ -30,15 +30,18 @@ public class Synchronous {
 
     private static int min(Path path) {
 
-        String line;
+        String[] numbers;
         try {
-            line = Files.lines(path).findFirst().orElse(null);
+            numbers = Files.lines(path)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Error: empty file"))
+                .split(",");
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Couldn't read from " + path);
         }
         return
-            Arrays.stream(line.split(","))
+            Arrays.stream(numbers)
                 .mapToInt(Integer::parseInt)
                 .min()
                 .orElseThrow(() ->
