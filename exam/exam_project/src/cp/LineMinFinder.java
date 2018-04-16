@@ -121,16 +121,4 @@ class LineMinFinder {
             result.complete(new ExamResult(path, lineNumber));
         }
     }
-
-    // ===================================================================================
-
-    public static void main(String[] args) {
-        Path dir = Paths.get("/home/thomas/git/cp2018/exam/data_example/");
-        Path testFile = Paths.get("/home/thomas/git/cp2018/exam/data_example/numbers_1.txt");
-        // System.out.println(fileMatches(testFile,100, 5));
-        // System.out.println(FileStats.get(testFile));
-        // Result result = find(dir,  40579386);
-        Result result = find(dir, 40580387); // seems to be thi
-        System.out.println(result);
-    }
 }
