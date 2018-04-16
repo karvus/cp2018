@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Fabrizio Montesi <fmontesi@imada.sdu.dk>
  */
-@SuppressWarnings("UnnecessaryInterfaceModifier")
+@SuppressWarnings({"UnnecessaryInterfaceModifier", "unused"})
 public interface Stats
 {
 	/**
