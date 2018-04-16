@@ -56,7 +56,7 @@ public class MinCollector {
                 collectMinValues(NumberFiles, results)));
 
         // Gather NumberFiles.  Performed in this (main) thread.
-        NumberFile.collectNumberFiles(dir, NumberFiles, NumberFile.TXT_MATCHER);
+        NumberFile.collectNumberFiles(dir, NumberFile.TXT_MATCHER, NumberFiles);
 
         // At this point, no more paths will be added to the queue, so we feed the poison pill,
         // prompting our consumers to exit.

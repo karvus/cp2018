@@ -46,7 +46,7 @@ public class StatsComputer {
 
         // Produce *{.txt,.dat}-files, for collectors to consume, finally feeding
         // a poison pill, and waiting for completion of the collectors.
-        NumberFile.collectNumberFiles(dir, NumberFiles, NumberFile.TXTDAT_MATCHER);
+        NumberFile.collectNumberFiles(dir, NumberFile.TXTDAT_MATCHER, NumberFiles);
         NumberFiles.add(POISON_PILL);
         Util.shutdownAndAwait(collectors);
 
@@ -125,12 +125,17 @@ public class StatsComputer {
             this.sum = sum;
         }
 
+        /**
+         * Used as a comparator for the ConcurrentSkipList.
+         */
         int getSum() {
             return sum;
         }
     }
 
-    // Helper class that encapsulates computation of number-frequency-statistics.
+    /**
+     * Helper class that encapsulates computation of number-frequency-statistics.
+     */
     private static class FrequencyStats {
 
         final int mostFrequent;
@@ -141,7 +146,12 @@ public class StatsComputer {
             this.leastFrequent = leastFrequent;
         }
 
-        // Take map of number -> occurrences, and return an object with statistics.
+        /**
+         * Take a map of number -> frequency, and return an object with the most- and least frequent number.
+         *
+         * @param occurrences map of number -> frequency
+         * @return an object with the most- and least frequent number
+         */
         private static FrequencyStats get(ConcurrentMap<Integer, LongAdder> occurrences) {
             int leastFrequent = -1, lowestFrequency = Integer.MAX_VALUE;
             int mostFrequent = -1, highestFrequency = Integer.MIN_VALUE;

@@ -1,7 +1,5 @@
 package cp;
 
-// Synchronous solutions, for benchmark reference
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,6 +9,9 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Synchronous implementation of some of the exam parts.  Not part of the exam.
+ */
 public class Synchronous {
 
     static List<Result> m1(Path dir) {

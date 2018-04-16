@@ -14,7 +14,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Represents a text-file with one or more lines of comma-separated integer values.
+ * Represents a text-file with one or more lines of comma-separated integer values,
+ * and provides some utilities for working with them.
  */
 class NumberFile {
 
@@ -52,15 +53,12 @@ class NumberFile {
     }
 
     /** Recursively collect NumberFiles matching a criteria into a shared datastructure.
-     *
      * @param start Path from which to start collecting
-     * @param numberFiles The shared structure to collect into (an out-value)
      * @param matcher Criteria from which to filter
+     * @param numberFiles The shared structure to collect into (output)
      */
-
     static void collectNumberFiles(Path start,
-                                   BlockingDeque<NumberFile> numberFiles,
-                                   PathMatcher matcher) {
+                                   PathMatcher matcher, BlockingDeque<NumberFile> numberFiles) {
         AtomicInteger count = new AtomicInteger();
         try {
             Files.walk(start)
