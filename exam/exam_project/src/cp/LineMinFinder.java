@@ -110,7 +110,12 @@ class LineMinFinder {
         }
     }
 
-    private static void consumeLine(String line, int min, int lineNumber, CompletableFuture<Result> result, Path path) {
+    private static void consumeLine(String line,
+                                    int min,
+                                    int lineNumber,
+                                    CompletableFuture<Result> result,
+                                    Path path)
+    {
         if (Util.computeSum(line) >= min) {
             // System.out.printf("%s: %d: %s", path, lineNumber, line);
             result.complete(new ExamResult(path, lineNumber));
