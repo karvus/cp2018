@@ -17,7 +17,6 @@ public class MinCollector {
     // This sentinel means that nothing more will be added to a queue.
     private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
-
     /**
      * Collect the min-value from plain-text files of comma-separated integer values.
      * @param dir Root of directories to be traversed
