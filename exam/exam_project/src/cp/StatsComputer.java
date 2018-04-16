@@ -9,11 +9,17 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
+/** This implements the m3 part of the project. */
 public class StatsComputer {
 
     // This sentinel means that nothing more will be added to a queue.
     private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
+    /**
+     * Traverse a directory, computing {@link Stats} about {@link NumberFile}s
+     * @param dir {@link Path} to starting directory
+     * @return Statistics about the files in the directory
+     */
     static Stats compute(Path dir) {
 
         // queue of NumberFiles to be consumed (produced in main thread)

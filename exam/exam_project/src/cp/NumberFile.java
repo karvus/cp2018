@@ -16,24 +16,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Represents a text-file with one or more lines of comma-separated integer values.
  */
-public class NumberFile {
+class NumberFile {
 
     /** Matches files ending in ".dat" */
-    public static final PathMatcher DAT_MATCHER =
+    static final PathMatcher DAT_MATCHER =
         FileSystems.getDefault().getPathMatcher("glob:**.dat");
 
     /** Matches files ending in ".txt" or ".dat" */
-    public static final PathMatcher TXTDAT_MATCHER =
+    static final PathMatcher TXTDAT_MATCHER =
         FileSystems.getDefault().getPathMatcher("glob:**.{txt,dat}");
 
     /** Matches files ending in ".txt" */
-    public static final PathMatcher TXT_MATCHER =
+    static final PathMatcher TXT_MATCHER =
         FileSystems.getDefault().getPathMatcher("glob:**.txt");
 
     private final Path path;
     private ConcurrentLinkedQueue<Integer> numbers;
 
-    NumberFile(Path path) {
+    private NumberFile(Path path) {
         this.path = path;
     }
 
@@ -47,7 +47,7 @@ public class NumberFile {
      * Return an object suitable for use as a poison pill
      * @return An object suitable as a poison pill
      */
-    public static NumberFile getPoisonPill() {
+    static NumberFile getPoisonPill() {
         return new NumberFile();
     }
 
@@ -57,7 +57,8 @@ public class NumberFile {
      * @param numberFiles The shared structure to collect into (an out-value)
      * @param matcher Criteria from which to filter
      */
-    public static void collectNumberFiles(Path start,
+
+    static void collectNumberFiles(Path start,
                                    BlockingDeque<NumberFile> numberFiles,
                                    PathMatcher matcher) {
         AtomicInteger count = new AtomicInteger();
@@ -89,7 +90,7 @@ public class NumberFile {
      * @return list of numbers in the file
      */
     // This is never invoked in a concurrent manner in the current codebase, but making it
-    // synchronized to be on the safe side, as we change state.
+    // synchronized to be on the safe side, as we change the state of a field.
     synchronized public ConcurrentLinkedQueue<Integer> getNumbers() {
         if (numbers == null) {  // we haven't been called before, so do the heavy lifting
             numbers = new ConcurrentLinkedQueue<>();
@@ -111,15 +112,15 @@ public class NumberFile {
         return Collections.min(getNumbers());
     }
 
-    int max() {
-        return Collections.max(getNumbers());
-    }
-
     int sum() {
         return getNumbers().stream().parallel().mapToInt(Integer::intValue).sum();
     }
 
-    int count() {
-        return getNumbers().size();
-    }
+//    int max() {
+//        return Collections.max(getNumbers());
+//    }
+//
+//    int count() {
+//        return getNumbers().size();
+//    }
 }

@@ -28,11 +28,11 @@ public class Synchronous {
         return list;
     }
 
-    static int min(Path path) {
+    private static int min(Path path) {
 
         String line;
         try {
-            line = Files.lines(path).findFirst().get();
+            line = Files.lines(path).findFirst().orElse(null);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Couldn't read from " + path);
@@ -41,7 +41,8 @@ public class Synchronous {
             Arrays.stream(line.split(","))
                 .mapToInt(Integer::parseInt)
                 .min()
-                .getAsInt();
+                .orElseThrow(() ->
+                    new RuntimeException("Error: unable to parse comma-separated number line."));
     }
 
     public static void main(String[] args) {
