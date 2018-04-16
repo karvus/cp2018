@@ -51,9 +51,9 @@ public class ExamStats implements Stats {
     @Override
     public String toString() {
         return "ExamStats{" +
-                "mostFrequent=" + mostFrequent +
-                ", leastFrequent=" + leastFrequent +
-                ", byTotals=" + byTotals +
+                "mostFrequent=" + mostFrequent() +
+                ", leastFrequent=" + leastFrequent() +
+                ", byTotals=" + byTotals() +
                 ", occurrences=" + occurrences +
                 '}';
     }

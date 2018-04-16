@@ -45,6 +45,6 @@ public class Main {
         Stats stats = Exam.m3(dir);
         t = System.currentTimeMillis();
         System.out.println("Run time: " + (t-t0));
-        System.out.println(stats);
+        System.out.println(stats.byTotals());
     }
 }
