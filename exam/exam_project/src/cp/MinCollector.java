@@ -1,7 +1,6 @@
 package cp;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,8 +8,9 @@ import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
 /**
- * @author Thomas Stenhaug
  * Implementation of the m1 functionality of the exam project.
+ *
+ * @author Thomas Stenhaug
  */
 public class MinCollector {
 
@@ -18,9 +18,31 @@ public class MinCollector {
     private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
     /**
-     * Collect the min-value from plain-text files of comma-separated integer values.
-     * @param dir Root of directories to be traversed
-     * @return List of {@link Result}s, path and the min-value of the associated file
+     * This method recursively visits a directory to find all the text
+     * files contained in it and its subdirectories.
+     * <p>
+     * You must consider only files ending with a ".txt" suffix.
+     * You are guaranteed that they will be text files.
+     * <p>
+     * You can assume that each text file contains a (non-empty)
+     * comma-separated sequence of
+     * numbers. For example: 100,200,34,25
+     * There won't be any new lines, spaces, etc., and the sequence never
+     * ends with a comma.
+     * You are guaranteed that each number will be at least or equal to
+     * 0 (zero), i.e., no negative numbers.
+     * <p>
+     * The search is recursive: if the directory contains subdirectories,
+     * these are also searched and so on so forth (until there are no more
+     * subdirectories).
+     * <p>
+     * This method returns a list of results.
+     * The list contains a result for each text file that you find.
+     * Each {@link Result} stores the path of its text file,
+     * and the lowest number (minimum) found inside of the text file.
+     *
+     * @param dir the directory to search
+     * @return a list of results ({@link Result}), each giving the lowest number found in a file
      */
     static List<Result> collect(Path dir) {
         Deque<Result> results = new ConcurrentLinkedDeque<>();
@@ -43,12 +65,16 @@ public class MinCollector {
         Util.shutdownAndAwait(consumers);
 
         System.out.printf("MinCollector.collect() computed min-values in %d .txt-files.\n",
-                results.size());
+            results.size());
         return new LinkedList<>(results);
     }
 
-    // Take NumberFiles, until a poison pill is found, compute min-value for each file, and
-    // add results to minValues.
+    /**
+     * Take {@link NumberFile}s, until a poison pill is found, compute min-value for each file, and
+     * add results to minValues.
+     * @param paths queue of paths to collect min-values from
+     * @param minValues queue to put the min-values into
+     */
     private static void collectMinValues(BlockingDeque<NumberFile> paths, Deque<Result> minValues) {
 
         // Take paths as long as we're not cancelled
@@ -72,11 +98,5 @@ public class MinCollector {
                 minValues.add(result);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Path dir = Paths.get("/home/thomas/git/cp2018/exam/data_example/");
-        List<Result> results = Exam.m1(dir);
-        results.forEach(System.out::println);
     }
 }

@@ -2,23 +2,28 @@ package cp;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
-/** This implements the m3 part of the project. */
+/**
+ * This implements the m3 part of the project.
+ */
 public class StatsComputer {
 
     // This sentinel means that nothing more will be added to a queue.
     private final static NumberFile POISON_PILL = NumberFile.getPoisonPill();
 
     /**
-     * Traverse a directory, computing {@link Stats} about {@link NumberFile}s
-     * @param dir {@link Path} to starting directory
-     * @return Statistics about the files in the directory
+     * Computes overall statistics about the occurrences of numbers in a directory.
+     * <p>
+     * This method recursively searches the directory for all numbers in all lines of .txt and .dat files and returns
+     * a {@link Stats} object containing the statistics of interest. See the
+     * documentation of {@link Stats}.
      */
     static Stats compute(Path dir) {
 
@@ -30,15 +35,15 @@ public class StatsComputer {
         // want to produce.
         ConcurrentMap<Integer, LongAdder> occurrences = new ConcurrentHashMap<>();
         ConcurrentSkipListSet<Total> totals = new ConcurrentSkipListSet<>(
-                Comparator.comparing(Total::getSum)
+            Comparator.comparing(Total::getSum)
         );
 
         // Start collectors, so they can begin work as soon as it
         // becomes available.
         ExecutorService collectors = Executors.newCachedThreadPool();
         IntStream.range(0, Runtime.getRuntime().availableProcessors())
-                .forEach(i -> collectors.submit(() ->
-                        collectStats(NumberFiles, occurrences, totals)));
+            .forEach(i -> collectors.submit(() ->
+                collectStats(NumberFiles, occurrences, totals)));
 
         // Produce *{.txt,.dat}-files, for collectors to consume, finally feeding
         // a poison pill, and waiting for completion of the collectors.
@@ -51,22 +56,22 @@ public class StatsComputer {
 
         // Compute the frequency statistics in its own thread.
         Future<FrequencyStats> frequencyStats = computers.submit(() ->
-                FrequencyStats.get(occurrences));
+            FrequencyStats.get(occurrences));
 
         // Compute a sorted list of totals from our SkipListSet of Totals
         // in its own thread.
         Future<List<Path>> futureTotals = computers.submit(() ->
-                totals.stream().map(t -> t.file).collect(toList())
+            totals.stream().map(t -> t.file).collect(toList())
         );
 
         // Create the final Stats object.
         Stats stats;
         try {
             stats = new ExamStats(
-                    occurrences,
-                    frequencyStats.get().mostFrequent,
-                    frequencyStats.get().leastFrequent,
-                    futureTotals.get());
+                occurrences,
+                frequencyStats.get().mostFrequent,
+                frequencyStats.get().leastFrequent,
+                futureTotals.get());
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
