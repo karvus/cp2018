@@ -128,16 +128,11 @@ public class StatsComputer {
     private static class FrequencyStats {
 
         final int mostFrequent;
-        final int highestFrequency;
         final int leastFrequent;
-        final int lowestFrequency;
 
-        FrequencyStats(int mostFrequent, int highestFrequency,
-                       int leastFrequent, int lowestFrequency) {
+        FrequencyStats(int mostFrequent, int leastFrequent) {
             this.mostFrequent = mostFrequent;
-            this.highestFrequency = highestFrequency;
             this.leastFrequent = leastFrequent;
-            this.lowestFrequency = lowestFrequency;
         }
 
         // Take map of number -> occurrences, and return an object with statistics.
@@ -156,7 +151,7 @@ public class StatsComputer {
                     lowestFrequency = frequency;
                 }
             }
-            return new FrequencyStats(mostFrequent, highestFrequency, leastFrequent, lowestFrequency);
+            return new FrequencyStats(mostFrequent, leastFrequent);
         }
     }
 }
