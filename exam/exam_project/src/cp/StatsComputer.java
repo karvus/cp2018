@@ -1,7 +1,6 @@
 package cp;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.*;
@@ -54,12 +53,12 @@ public class StatsComputer {
         // Fire up an executor to handle the remaining computation tasks.
         ExecutorService computers = Executors.newCachedThreadPool();
 
-        // Compute the frequency statistics in its own thread.
+        // Compute the frequency statistics in a different thread.
         Future<FrequencyStats> frequencyStats = computers.submit(() ->
             FrequencyStats.get(occurrences));
 
         // Compute a sorted list of totals from our SkipListSet of Totals
-        // in its own thread.
+        // in a different thread.
         Future<List<Path>> futureTotals = computers.submit(() ->
             totals.stream().map(t -> t.file).collect(toList())
         );
@@ -80,9 +79,16 @@ public class StatsComputer {
         return stats;
     }
 
-    // Collect statistics about NumberFiles into shared data structures.
-    // These are consumers/producers, governed by the "collectors" executor
-    // in main thread.
+
+    /**
+     * Collect statistics about NumberFiles into shared data structures.
+     * These are consumers/producers, governed by the "collectors" executor
+     * in main thread.
+     *
+     * @param NumberFiles a BlockingDeque of NumberFiles (input)
+     * @param occurrences a map of occurrences of integers in the files (output)
+     * @param totals      an ordered set of {@link Total}s
+     */
     private static void collectStats(BlockingDeque<NumberFile> NumberFiles,
                                      ConcurrentMap<Integer, LongAdder> occurrences,
                                      ConcurrentSkipListSet<Total> totals) {
@@ -107,14 +113,9 @@ public class StatsComputer {
         }
     }
 
-    public static void main(String[] args) {
-        Path dir = Paths.get("/home/thomas/git/cp2018/exam/data_example/");
-        Stats stats = compute(dir);
-        System.out.println(stats);
-        System.out.println(stats.occurrences(4432324));
-    }
-
-    // helper class
+    /**
+     * Helper class that contains a {@link Path} and the sum of all numbers in the associated file.
+     */
     private static class Total {
         final Path file;
         final int sum;
