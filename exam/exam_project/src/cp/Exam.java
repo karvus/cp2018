@@ -7,6 +7,7 @@ import java.util.List;
  * 
  * @author Fabrizio Montesi <fmontesi@imada.sdu.dk>
  */
+@SuppressWarnings("WeakerAccess")
 public class Exam
 {
 	/**

@@ -8,6 +8,7 @@ import java.nio.file.Path;
  *
  * @author Fabrizio Montesi <fmontesi@imada.sdu.dk>
  */
+@SuppressWarnings("UnnecessaryInterfaceModifier")
 public interface Result
 {
 	/**
